@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import '../../model/novel.dart';
 import '../../model/chapter.dart';
+import '../../API/gemini_services.dart';
 
 class WorkspaceScreen extends StatefulWidget {
   final String novelId;
@@ -43,6 +44,26 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _currentChapter = chapter!;
     _editorController.text = _currentChapter.content;
     setState(() => _isLoading = false);
+  }
+
+  Future<void> _generateAIContent(String prompt) async {
+    setState(() => _isLoading = true);
+    try {
+      final generatedText = await GeminiService.generateText(
+        prompt,
+        _editorController.text,
+        _selectedAction,
+      );
+      setState(() {
+        _editorController.text += '\n\n$generatedText';
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error generating text: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   void _onSave() async {
@@ -138,13 +159,15 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: () {
+                    final prompt = _promptController.text.trim();
+                    if (prompt.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Prompt tidak boleh kosong')),
+                      );
+                      return;
+                    }
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('$_selectedAction: ${_promptController.text}'),
-                        backgroundColor: Colors.deepPurple,
-                      ),
-                    );
+                    _generateAIContent(prompt);
                     _promptController.clear();
                   },
                   child: const Text('Kirim ke AI'),
