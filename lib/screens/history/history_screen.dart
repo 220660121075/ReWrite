@@ -1,54 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:rewrite/model/chapter.dart';
+import 'package:rewrite/model/history_entry.dart';
 import 'package:rewrite/widgets/history_card.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
 
-  final List<Map<String, String>> dummyHistory = const [
-    {'action': 'Added', 'chapter': 'Chapter 3', 'date': '06/30/2025'},
-    {'action': 'Edited', 'chapter': 'Chapter 2', 'date': '06/29/2025'},
-    {'action': 'Fixed Typos', 'chapter': 'Chapter 1', 'date': '06/28/2025'},
-  ];
-
   @override
   Widget build(BuildContext context) {
     final textColor = Theme.of(context).colorScheme.onBackground;
+    final historyBox = Hive.box<HistoryEntry>('historyBox');
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('History', style: TextStyle(color: textColor)),
-        centerTitle: true,
+        title: Text(
+          'History', 
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+            ),
+          ),
         iconTheme: IconThemeData(color: textColor),
       ),
-      body: dummyHistory.isEmpty
-          ? Center(
+      body: ValueListenableBuilder(
+        valueListenable: historyBox.listenable(),
+        builder: (context, Box<HistoryEntry> box, _) {
+          final historyList = box.values.toList()
+            ..sort((a, b) => b.date.compareTo(a.date)); // most recent first
+
+          if (historyList.isEmpty) {
+            return Center(
               child: Text(
                 'No history available.',
                 style: TextStyle(color: textColor.withOpacity(0.6)),
               ),
-            )
-          : ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: dummyHistory.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final entry = dummyHistory[index];
-                return GestureDetector(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Selected: ${entry['title']}'),
-                      ),
-                    );
-                  },
-                  child: HistoryCard(
-                    action: entry['action']!,
-                    chapter: entry['chapter']!,
-                    date: entry['date']!,
-                  ),
-                );
-              },
-            ),
+            );
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: historyList.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final entry = historyList[index];
+
+              return HistoryItem(
+                chapter: Chapter(
+                  id: entry.relatedId,
+                  title: entry.title,
+                  content: '',
+                  lastModified: entry.date,
+                ),
+                novelId: entry.relatedNovelId,
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

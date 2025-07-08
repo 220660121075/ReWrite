@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import 'package:rewrite/model/novel.dart';
 import 'package:rewrite/model/chapter.dart';
 import 'package:rewrite/widgets/genre_chip.dart';
+import 'package:rewrite/screens/history/history_logger.dart';
 
 class CreateNovelScreen extends StatefulWidget {
   const CreateNovelScreen({super.key});
@@ -88,6 +89,14 @@ class _CreateNovelScreenState extends State<CreateNovelScreen> {
 
       final box = Hive.box<Novel>('novelsBox');
       await box.put(novel.id, novel);
+
+      HistoryLogger.log(
+        action: 'Create Novel',
+        type: 'Novel',
+        relatedId: novel.id,
+        title: novel.title,
+        relatedNovelId: novel.id,
+      );
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Novel "$title" created!')),

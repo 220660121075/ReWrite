@@ -1,72 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:rewrite/model/chapter.dart';
+import 'package:rewrite/screens/workspace/workspace_screen.dart';
 
-class HistoryCard extends StatelessWidget {
-  final String action;
-  final String chapter;
-  final String date;
-  final VoidCallback? onTap;
+class HistoryItem extends StatelessWidget {
+  final Chapter chapter;
+  final String novelId;
 
-  const HistoryCard({
+  const HistoryItem({
     super.key,
-    required this.action,
     required this.chapter,
-    required this.date,
-    this.onTap,
+    required this.novelId,
   });
 
   @override
   Widget build(BuildContext context) {
     final textColor = Theme.of(context).colorScheme.onBackground;
-    final cardColor = Theme.of(context).colorScheme.surface;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(Icons.history, color: textColor.withOpacity(0.6)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '$action $chapter',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: textColor,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    date,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: textColor.withOpacity(0.6),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
+    return ListTile(
+      tileColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      title: Text(
+        chapter.title,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: textColor,
         ),
       ),
+      subtitle: Text(
+        'Last modified: ${chapter.lastModified.toLocal()}',
+        style: TextStyle(
+          fontSize: 14,
+          color: textColor.withOpacity(0.6),
+        ),
+      ),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => WorkspaceScreen(
+              novelId: novelId,
+              chapterId: chapter.id,
+            ),
+          ),
+        );
+      },
     );
   }
 }

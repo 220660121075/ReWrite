@@ -5,6 +5,7 @@ import 'package:rewrite/model/chapter.dart';
 import 'package:rewrite/screens/workspace/workspace_screen.dart';
 import 'package:rewrite/widgets/chapter_card.dart';
 import 'package:uuid/uuid.dart';
+import 'package:rewrite/screens/history/history_logger.dart';
 
 class ChapterListScreen extends StatefulWidget {
   final String novelId;
@@ -91,6 +92,14 @@ class _ChapterListScreenState extends State<ChapterListScreen> {
           novel.chapters.add(newChapter);
           box.put(widget.novelId, novel);
         });
+
+        HistoryLogger.log(
+          action: 'Added',
+          type: 'Chapter',
+          relatedId: newChapterId,
+          relatedNovelId: widget.novelId,
+          title: result,
+        );
 
         Navigator.push(
           context,
@@ -207,14 +216,13 @@ class _ChapterListScreenState extends State<ChapterListScreen> {
                             ),
                             confirmDismiss: (direction) async {
                               if (direction == DismissDirection.startToEnd) {
-                                // Swipe right to edit
                                 final titleController = TextEditingController(text: chapter.title);
                                 final newTitle = await showDialog<String>(
                                   context: context,
                                   builder: (context) => AlertDialog(
                                     title: Text('Edit Chapter Title',
                                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
-                                    ), 
+                                    ),
                                     content: TextField(
                                       controller: titleController,
                                       style: TextStyle(color: textColor),
@@ -251,17 +259,33 @@ class _ChapterListScreenState extends State<ChapterListScreen> {
                                     );
                                     box.put(widget.novelId, novel);
                                   });
+
+                                  HistoryLogger.log(
+                                    action: 'Edited',
+                                    type: 'Chapter',
+                                    relatedId: chapter.id,
+                                    relatedNovelId: widget.novelId,
+                                    title: newTitle,
+                                  );
                                 }
-                                return false; // prevent dismiss on edit
+                                return false;
                               } else if (direction == DismissDirection.endToStart) {
-                                // Swipe left to delete
                                 final confirmed = await confirmDelete(chapter.id);
                                 if (confirmed) {
                                   setState(() {
                                     novel.chapters.removeWhere((c) => c.id == chapter.id);
                                     box.put(widget.novelId, novel);
                                   });
-                                  return true; // allow dismiss
+
+                                  HistoryLogger.log(
+                                    action: 'Deleted',
+                                    type: 'Chapter',
+                                    relatedId: chapter.id,
+                                    relatedNovelId: widget.novelId,
+                                    title: chapter.title,
+                                  );
+
+                                  return true;
                                 }
                               }
                               return false;

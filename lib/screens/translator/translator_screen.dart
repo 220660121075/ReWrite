@@ -41,7 +41,12 @@ class _TranslatorScreenState extends State<TranslatorScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Translator', style: TextStyle(color: textColor)),
+        title: Text(
+          'Translator',
+           style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: textColor,)),
         iconTheme: IconThemeData(color: textColor),
       ),
       body: Padding(

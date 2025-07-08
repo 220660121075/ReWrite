@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:rewrite/screens/history/history_logger.dart';
 import '../../model/novel.dart';
 import '../../model/chapter.dart';
 import '../../API/gemini_services.dart';
@@ -89,6 +90,14 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     }
 
     await box.put(widget.novelId, novel);
+
+    HistoryLogger.log(
+      action: 'Edit Chapter',
+      type: 'Chapter',
+      relatedId: widget.chapterId,
+      relatedNovelId: widget.novelId,
+      title: newChapter.title,
+    );
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Chapter saved successfully')),
