@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class HistoryItem extends StatelessWidget {
+class HistoryCard extends StatelessWidget {
   final String action;
   final String chapter;
   final String date;
   final VoidCallback? onTap;
 
-  const HistoryItem({
+  const HistoryCard({
     super.key,
     required this.action,
     required this.chapter,

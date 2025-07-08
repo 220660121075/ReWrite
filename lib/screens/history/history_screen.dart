@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rewrite/widgets/history_item.dart';
+import 'package:rewrite/widgets/history_card.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -41,7 +41,7 @@ class HistoryScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  child: HistoryItem(
+                  child: HistoryCard(
                     action: entry['action']!,
                     chapter: entry['chapter']!,
                     date: entry['date']!,

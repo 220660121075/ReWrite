@@ -186,7 +186,10 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Workspace', style: TextStyle(color: textColor)),
+        title: Text(_currentChapter.title.isEmpty ? 'Untitled Chapter' : _currentChapter.title,
+        style: TextStyle(color: textColor),
+        overflow: TextOverflow.ellipsis,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),

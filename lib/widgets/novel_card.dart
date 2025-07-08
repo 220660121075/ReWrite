@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // for formatting createdDate
 
 class NovelCard extends StatelessWidget {
   final String title;
   final String description;
   final List<String> genres;
+  final String coverImage;       // ✅ added
+  final DateTime createdDate;    // ✅ added
   final VoidCallback onTap;
 
   const NovelCard({
@@ -11,6 +14,8 @@ class NovelCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.genres,
+    required this.coverImage,    // ✅ added
+    required this.createdDate,   // ✅ added
     required this.onTap,
   });
 
@@ -38,6 +43,24 @@ class NovelCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Optional Cover Image Preview
+            if (coverImage.isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  coverImage,
+                  height: 180,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    height: 180,
+                    color: Colors.grey.withOpacity(0.2),
+                    child: const Center(child: Icon(Icons.image_not_supported)),
+                  ),
+                ),
+              ),
+            if (coverImage.isNotEmpty) const SizedBox(height: 12),
+
             // Title
             Text(
               title,
@@ -87,6 +110,16 @@ class NovelCard extends StatelessWidget {
                   },
                 ),
               ),
+            const SizedBox(height: 12),
+
+            // Created Date Display
+            Text(
+              'Created on ${DateFormat.yMMMd().format(createdDate)}',
+              style: TextStyle(
+                fontSize: 12,
+                color: textColor.withOpacity(0.5),
+              ),
+            ),
           ],
         ),
       ),

@@ -46,6 +46,7 @@ class _CreateNovelScreenState extends State<CreateNovelScreen> {
         ),
         content: TextField(
           controller: _customGenreController,
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           decoration: const InputDecoration(hintText: "Enter genre"),
         ),
         actions: [
@@ -131,6 +132,7 @@ class _CreateNovelScreenState extends State<CreateNovelScreen> {
                   const SizedBox(height: 8),
                   TextFormField(
                     controller: _titleController,
+                    style: TextStyle(color: textColor),
                     decoration: const InputDecoration(
                       hintText: 'Enter your novel title',
                       border: OutlineInputBorder(),
@@ -144,6 +146,7 @@ class _CreateNovelScreenState extends State<CreateNovelScreen> {
                   TextFormField(
                     controller: _descriptionController,
                     maxLines: 4,
+                    style: TextStyle(color: textColor),
                     decoration: const InputDecoration(
                       hintText: 'Describe your novel...',
                       border: OutlineInputBorder(),

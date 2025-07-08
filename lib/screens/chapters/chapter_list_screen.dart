@@ -35,9 +35,7 @@ class _ChapterListScreenState extends State<ChapterListScreen> {
           title: Text(widget.novelTitle, style: TextStyle(color: textColor)),
           iconTheme: IconThemeData(color: textColor),
         ),
-        body: const Center(
-          child: Text('Novel not found.'),
-        ),
+        body: const Center(child: Text('Novel not found.')),
       );
     }
 
@@ -110,7 +108,10 @@ class _ChapterListScreenState extends State<ChapterListScreen> {
       final result = await showDialog<bool>(
         context: context,
         builder: (_) => AlertDialog(
-          title: const Text('Delete Chapter'),
+          title: Text(
+            'Delete Chapter',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+          ),
           content: const Text('Are you sure you want to delete this chapter?'),
           actions: [
             TextButton(
@@ -155,7 +156,7 @@ class _ChapterListScreenState extends State<ChapterListScreen> {
                     Icon(Icons.swipe_left, size: 20, color: textColor.withOpacity(0.6)),
                     const SizedBox(width: 6),
                     Text(
-                      'Swipe left on a chapter to delete',
+                      'Swipe left to delete, right to edit',
                       style: TextStyle(color: textColor.withOpacity(0.6)),
                     ),
                   ],
@@ -178,6 +179,19 @@ class _ChapterListScreenState extends State<ChapterListScreen> {
                           return Dismissible(
                             key: Key(chapter.id),
                             background: Container(
+                              color: Colors.blue,
+                              alignment: Alignment.centerLeft,
+                              padding: const EdgeInsets.only(left: 20),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: const [
+                                  Icon(Icons.edit, color: Colors.white),
+                                  SizedBox(width: 8),
+                                  Text('Edit', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                            ),
+                            secondaryBackground: Container(
                               color: Colors.red,
                               alignment: Alignment.centerRight,
                               padding: const EdgeInsets.only(right: 20),
@@ -185,24 +199,70 @@ class _ChapterListScreenState extends State<ChapterListScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: const [
-                                  Text(
-                                    'Delete',
-                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                  ),
+                                  Text('Delete', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                   SizedBox(width: 8),
                                   Icon(Icons.delete, color: Colors.white),
                                 ],
                               ),
                             ),
-                            direction: DismissDirection.endToStart,
-                            confirmDismiss: (_) async {
-                              final confirmed = await confirmDelete(chapter.id);
-                              if (confirmed) {
-                                setState(() {
-                                  novel.chapters.removeWhere((c) => c.id == chapter.id);
-                                  box.put(widget.novelId, novel);
-                                });
-                                return true; // auto-dismiss after confirmation
+                            confirmDismiss: (direction) async {
+                              if (direction == DismissDirection.startToEnd) {
+                                // Swipe right to edit
+                                final titleController = TextEditingController(text: chapter.title);
+                                final newTitle = await showDialog<String>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: Text('Edit Chapter Title',
+                                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+                                    ), 
+                                    content: TextField(
+                                      controller: titleController,
+                                      style: TextStyle(color: textColor),
+                                      decoration: const InputDecoration(
+                                        labelText: 'Chapter Title',
+                                        hintText: 'Enter new chapter title',
+                                      ),
+                                      autofocus: true,
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          final updatedTitle = titleController.text.trim();
+                                          if (updatedTitle.isNotEmpty) {
+                                            Navigator.pop(context, updatedTitle);
+                                          }
+                                        },
+                                        child: const Text('Save'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (newTitle != null && newTitle.isNotEmpty) {
+                                  setState(() {
+                                    chapters[index] = Chapter(
+                                      id: chapter.id,
+                                      title: newTitle,
+                                      content: chapter.content,
+                                      lastModified: DateTime.now(),
+                                    );
+                                    box.put(widget.novelId, novel);
+                                  });
+                                }
+                                return false; // prevent dismiss on edit
+                              } else if (direction == DismissDirection.endToStart) {
+                                // Swipe left to delete
+                                final confirmed = await confirmDelete(chapter.id);
+                                if (confirmed) {
+                                  setState(() {
+                                    novel.chapters.removeWhere((c) => c.id == chapter.id);
+                                    box.put(widget.novelId, novel);
+                                  });
+                                  return true; // allow dismiss
+                                }
                               }
                               return false;
                             },

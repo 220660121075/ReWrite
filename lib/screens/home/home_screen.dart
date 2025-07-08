@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rewrite/model/novel.dart';
 import 'package:rewrite/screens/translator/translator_screen.dart';
 import 'package:rewrite/widgets/bottom_nav.dart';
@@ -50,10 +50,7 @@ class LibraryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textColor = Theme.of(context).colorScheme.onBackground;
-    final cardColor = Theme.of(context).colorScheme.surface;
-
     final box = Hive.box<Novel>('novelsBox');
-    final novels = box.values.toList();
 
     return SafeArea(
       child: Padding(
@@ -86,9 +83,14 @@ class LibraryScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            novels.isEmpty
-                ? Expanded(
-                    child: Center(
+            Expanded(
+              child: ValueListenableBuilder(
+                valueListenable: box.listenable(),
+                builder: (context, Box<Novel> box, _) {
+                  final novels = box.values.toList();
+
+                  if (novels.isEmpty) {
+                    return Center(
                       child: Text(
                         'Start making your world!',
                         style: TextStyle(
@@ -97,16 +99,133 @@ class LibraryScreen extends StatelessWidget {
                           fontStyle: FontStyle.italic,
                         ),
                       ),
-                    ),
-                  )
-                : Expanded(
-                    child: ListView.separated(
-                      itemCount: novels.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final novel = novels[index];
-                        return NovelCard(
+                    );
+                  }
+
+                  return ListView.separated(
+                    itemCount: novels.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final novel = novels[index];
+                      return Dismissible(
+                        key: Key(novel.id),
+                        background: Container(
+                          color: Colors.blue,
+                          alignment: Alignment.centerLeft,
+                          padding: const EdgeInsets.only(left: 20),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Icon(Icons.edit, color: Colors.white),
+                              SizedBox(width: 8),
+                              Text('Edit', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                        secondaryBackground: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: const [
+                              Text('Delete', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              SizedBox(width: 8),
+                              Icon(Icons.delete, color: Colors.white),
+                            ],
+                          ),
+                        ),
+                        confirmDismiss: (direction) async {
+                          if (direction == DismissDirection.startToEnd) {
+                            final titleController = TextEditingController(text: novel.title);
+                            final descriptionController = TextEditingController(text: novel.description);
+
+                            await showDialog<void>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(
+                                  'Edit Novel',
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+                                ),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextField(
+                                      controller: titleController,
+                                      style: TextStyle(color: textColor),
+                                      decoration: const InputDecoration(labelText: 'Title'),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    TextField(
+                                      controller: descriptionController,
+                                      style: TextStyle(color: textColor),
+                                      decoration: const InputDecoration(labelText: 'Description'),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      final updatedTitle = titleController.text.trim();
+                                      final updatedDescription = descriptionController.text.trim();
+                                      if (updatedTitle.isNotEmpty) {
+                                        final updatedNovel = Novel(
+                                          id: novel.id,
+                                          createdDate: novel.createdDate,
+                                          coverImage: novel.coverImage,
+                                          title: updatedTitle,
+                                          description: updatedDescription,
+                                          genres: novel.genres,
+                                          chapters: novel.chapters,
+                                        );
+                                        box.put(novel.id, updatedNovel);
+                                      }
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Save'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            return false;
+                          } else if (direction == DismissDirection.endToStart) {
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text(
+                                  'Delete Novel',
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+                                ),
+                                content: const Text('Are you sure you want to delete this novel?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, true),
+                                    child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirmed == true) {
+                              box.delete(novel.id);
+                              return true;
+                            }
+                            return false;
+                          }
+                          return false;
+                        },
+                        child: NovelCard(
                           title: novel.title,
+                          coverImage: novel.coverImage,
+                          createdDate: novel.createdDate,
                           description: novel.description,
                           genres: novel.genres,
                           onTap: () {
@@ -120,13 +239,16 @@ class LibraryScreen extends StatelessWidget {
                               ),
                             );
                           },
-                        );
-                      },
-                    ),
-                  ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
           ],
         ),
       ),
     );
   }
-} 
+}
