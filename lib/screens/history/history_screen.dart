@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rewrite/model/chapter.dart';
 import 'package:rewrite/model/history_entry.dart';
 import 'package:rewrite/widgets/history_card.dart';
+import 'package:get/get.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -15,7 +16,7 @@ class HistoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'History', 
+          'History'.tr, 
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,

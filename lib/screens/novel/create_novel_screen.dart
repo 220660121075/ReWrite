@@ -6,6 +6,7 @@ import 'package:rewrite/model/novel.dart';
 import 'package:rewrite/model/chapter.dart';
 import 'package:rewrite/widgets/genre_chip.dart';
 import 'package:rewrite/screens/history/history_logger.dart';
+import 'package:get/get.dart';
 
 class CreateNovelScreen extends StatefulWidget {
   const CreateNovelScreen({super.key});
@@ -91,7 +92,7 @@ class _CreateNovelScreenState extends State<CreateNovelScreen> {
       await box.put(novel.id, novel);
 
       HistoryLogger.log(
-        action: 'Create Novel',
+        action: 'Create Novel'.tr,
         type: 'Novel',
         relatedId: novel.id,
         title: novel.title,
@@ -113,7 +114,7 @@ class _CreateNovelScreenState extends State<CreateNovelScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create New Novel', style: TextStyle(color: textColor)),
+        title: Text('Create New Novel'.tr, style: TextStyle(color: textColor)),
         iconTheme: IconThemeData(color: textColor),
       ),
       body: SafeArea(
@@ -137,7 +138,7 @@ class _CreateNovelScreenState extends State<CreateNovelScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Title', style: TextStyle(fontSize: 16, color: textColor)),
+                  Text('Title'.tr, style: TextStyle(fontSize: 16, color: textColor)),
                   const SizedBox(height: 8),
                   TextFormField(
                     controller: _titleController,
@@ -150,7 +151,7 @@ class _CreateNovelScreenState extends State<CreateNovelScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  Text('Description', style: TextStyle(fontSize: 16, color: textColor)),
+                  Text('Description'.tr, style: TextStyle(fontSize: 16, color: textColor)),
                   const SizedBox(height: 8),
                   TextFormField(
                     controller: _descriptionController,
@@ -163,7 +164,7 @@ class _CreateNovelScreenState extends State<CreateNovelScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  Text('Select Genres:', style: TextStyle(fontSize: 16, color: textColor)),
+                  Text('Select Genres:'.tr, style: TextStyle(fontSize: 16, color: textColor)),
                   const SizedBox(height: 8),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -190,7 +191,7 @@ class _CreateNovelScreenState extends State<CreateNovelScreen> {
                           );
                         }).toList(),
                         ActionChip(
-                          label: const Text("+ Add Genre"),
+                          label: Text("+ Add Genre".tr),
                           onPressed: () => _addCustomGenre(context),
                         ),
                       ],
@@ -218,7 +219,7 @@ class _CreateNovelScreenState extends State<CreateNovelScreen> {
                     child: ElevatedButton.icon(
                       onPressed: _createNovel,
                       icon: const Icon(Icons.check),
-                      label: const Text('Create'),
+                      label: Text('Create'.tr),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.deepPurple,
                         foregroundColor: Colors.white,

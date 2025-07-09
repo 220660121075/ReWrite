@@ -6,6 +6,7 @@ import 'package:rewrite/screens/workspace/workspace_screen.dart';
 import 'package:rewrite/widgets/chapter_card.dart';
 import 'package:uuid/uuid.dart';
 import 'package:rewrite/screens/history/history_logger.dart';
+import 'package:get/get.dart';
 
 class ChapterListScreen extends StatefulWidget {
   final String novelId;
@@ -165,7 +166,7 @@ class _ChapterListScreenState extends State<ChapterListScreen> {
                     Icon(Icons.swipe_left, size: 20, color: textColor.withOpacity(0.6)),
                     const SizedBox(width: 6),
                     Text(
-                      'Swipe left to delete, right to edit',
+                      'Swipe left to delete, right to edit'.tr,
                       style: TextStyle(color: textColor.withOpacity(0.6)),
                     ),
                   ],
@@ -226,9 +227,9 @@ class _ChapterListScreenState extends State<ChapterListScreen> {
                                     content: TextField(
                                       controller: titleController,
                                       style: TextStyle(color: textColor),
-                                      decoration: const InputDecoration(
+                                      decoration: InputDecoration(
                                         labelText: 'Chapter Title',
-                                        hintText: 'Enter new chapter title',
+                                        hintText: 'Enter new chapter title'.tr,
                                       ),
                                       autofocus: true,
                                     ),

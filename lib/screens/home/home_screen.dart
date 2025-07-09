@@ -8,6 +8,7 @@ import '../history/history_screen.dart';
 import 'package:rewrite/widgets/novel_card.dart';
 import 'package:rewrite/screens/chapters/chapter_list_screen.dart';
 import '../novel/create_novel_screen.dart';
+import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -59,7 +60,7 @@ class LibraryScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'My Library',
+              'My Library'.tr,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -75,7 +76,7 @@ class LibraryScreen extends StatelessWidget {
                 );
               },
               icon: const Icon(Icons.add),
-              label: const Text('Create Your Novel'),
+              label: Text('Create Your Novel'.tr),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.deepPurple,
                 foregroundColor: Colors.white,

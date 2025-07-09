@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:rewrite/controllers/locale_controller.dart';
 
 class BottomNav extends StatelessWidget {
   final int currentIndex;
@@ -12,28 +14,32 @@ class BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: onTap,
-      type: BottomNavigationBarType.fixed,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.library_books),
-          label: 'Library',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.history),
-          label: 'History',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.translate),
-          label: 'Translator',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-      ],
+    return GetBuilder<LocaleController>(
+      builder: (_) {
+        return BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: onTap,
+          type: BottomNavigationBarType.fixed,
+          items: [
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.library_books),
+              label: 'library'.tr,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.history),
+              label: 'history'.tr,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.translate),
+              label: 'translator'.tr,
+            ),
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.person),
+              label: 'profile'.tr,
+            ),
+          ],
+        );
+      },
     );
   }
 }
