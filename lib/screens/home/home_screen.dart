@@ -103,146 +103,164 @@ class LibraryScreen extends StatelessWidget {
                     );
                   }
 
-                  return ListView.separated(
-                    itemCount: novels.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final novel = novels[index];
-                      return Dismissible(
-                        key: Key(novel.id),
-                        background: Container(
-                          color: Colors.blue,
-                          alignment: Alignment.centerLeft,
-                          padding: const EdgeInsets.only(left: 20),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Icon(Icons.edit, color: Colors.white),
-                              SizedBox(width: 8),
-                              Text('Edit', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            ],
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.swipe_left, size: 20, color: textColor.withOpacity(0.6)),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Swipe left to delete, right to edit'.tr,
+                            style: TextStyle(color: textColor.withOpacity(0.6)),
                           ),
-                        ),
-                        secondaryBackground: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: const [
-                              Text('Delete', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                              SizedBox(width: 8),
-                              Icon(Icons.delete, color: Colors.white),
-                            ],
-                          ),
-                        ),
-                        confirmDismiss: (direction) async {
-                          if (direction == DismissDirection.startToEnd) {
-                            final titleController = TextEditingController(text: novel.title);
-                            final descriptionController = TextEditingController(text: novel.description);
-
-                            await showDialog<void>(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text(
-                                  'Edit Novel',
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
-                                ),
-                                content: Column(
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: ListView.separated(
+                          itemCount: novels.length,
+                          separatorBuilder: (_, __) => const SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            final novel = novels[index];
+                            return Dismissible(
+                              key: Key(novel.id),
+                              background: Container(
+                                color: Colors.blue,
+                                alignment: Alignment.centerLeft,
+                                padding: const EdgeInsets.only(left: 20),
+                                child: Row(
                                   mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    TextField(
-                                      controller: titleController,
-                                      style: TextStyle(color: textColor),
-                                      decoration: const InputDecoration(labelText: 'Title'),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    TextField(
-                                      controller: descriptionController,
-                                      style: TextStyle(color: textColor),
-                                      decoration: const InputDecoration(labelText: 'Description'),
-                                    ),
+                                  children: const [
+                                    Icon(Icons.edit, color: Colors.white),
+                                    SizedBox(width: 8),
+                                    Text('Edit', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                                   ],
                                 ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      final updatedTitle = titleController.text.trim();
-                                      final updatedDescription = descriptionController.text.trim();
-                                      if (updatedTitle.isNotEmpty) {
-                                        final updatedNovel = Novel(
-                                          id: novel.id,
-                                          createdDate: novel.createdDate,
-                                          coverImage: novel.coverImage,
-                                          title: updatedTitle,
-                                          description: updatedDescription,
-                                          genres: novel.genres,
-                                          chapters: novel.chapters,
-                                        );
-                                        box.put(novel.id, updatedNovel);
-                                      }
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('Save'),
-                                  ),
-                                ],
                               ),
-                            );
-                            return false;
-                          } else if (direction == DismissDirection.endToStart) {
-                            final confirmed = await showDialog<bool>(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text(
-                                  'Delete Novel',
-                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+                              secondaryBackground: Container(
+                                color: Colors.red,
+                                alignment: Alignment.centerRight,
+                                padding: const EdgeInsets.only(right: 20),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: const [
+                                    Text('Delete', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                    SizedBox(width: 8),
+                                    Icon(Icons.delete, color: Colors.white),
+                                  ],
                                 ),
-                                content: const Text('Are you sure you want to delete this novel?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context, false),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context, true),
-                                    child: const Text('Delete', style: TextStyle(color: Colors.red)),
-                                  ),
-                                ],
                               ),
-                            );
-                            if (confirmed == true) {
-                              box.delete(novel.id);
-                              return true;
-                            }
-                            return false;
-                          }
-                          return false;
-                        },
-                        child: NovelCard(
-                          title: novel.title,
-                          coverImage: novel.coverImage,
-                          createdDate: novel.createdDate,
-                          description: novel.description,
-                          genres: novel.genres,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ChapterListScreen(
-                                  novelId: novel.id,
-                                  novelTitle: novel.title,
-                                ),
+                              confirmDismiss: (direction) async {
+                                if (direction == DismissDirection.startToEnd) {
+                                  final titleController = TextEditingController(text: novel.title);
+                                  final descriptionController = TextEditingController(text: novel.description);
+
+                                  await showDialog<void>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text(
+                                        'Edit Novel',
+                                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+                                      ),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextField(
+                                            controller: titleController,
+                                            style: TextStyle(color: textColor),
+                                            decoration: const InputDecoration(labelText: 'Title'),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          TextField(
+                                            controller: descriptionController,
+                                            style: TextStyle(color: textColor),
+                                            decoration: const InputDecoration(labelText: 'Description'),
+                                          ),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            final updatedTitle = titleController.text.trim();
+                                            final updatedDescription = descriptionController.text.trim();
+                                            if (updatedTitle.isNotEmpty) {
+                                              final updatedNovel = Novel(
+                                                id: novel.id,
+                                                createdDate: novel.createdDate,
+                                                coverImage: novel.coverImage,
+                                                title: updatedTitle,
+                                                description: updatedDescription,
+                                                genres: novel.genres,
+                                                chapters: novel.chapters,
+                                              );
+                                              box.put(novel.id, updatedNovel);
+                                            }
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text('Save'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  return false;
+                                } else if (direction == DismissDirection.endToStart) {
+                                  final confirmed = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text(
+                                        'Delete Novel',
+                                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+                                      ),
+                                      content: const Text('Are you sure you want to delete this novel?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context, false),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context, true),
+                                          child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirmed == true) {
+                                    box.delete(novel.id);
+                                    return true;
+                                  }
+                                  return false;
+                                }
+                                return false;
+                              },
+                              child: NovelCard(
+                                title: novel.title,
+                                coverImage: novel.coverImage,
+                                createdDate: novel.createdDate,
+                                description: novel.description,
+                                genres: novel.genres,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ChapterListScreen(
+                                        novelId: novel.id,
+                                        novelTitle: novel.title,
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             );
                           },
                         ),
-                      );
-                    },
+                      ),
+                    ],
                   );
                 },
               ),

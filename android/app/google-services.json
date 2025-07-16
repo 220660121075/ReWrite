@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "51598060407",
+    "project_id": "rewrite-app-b8e51",
+    "storage_bucket": "rewrite-app-b8e51.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:51598060407:android:2f3c5e31e6d7571413cf72",
+        "android_client_info": {
+          "package_name": "com.example.rewrite"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDc-NZuybkgNS8npoJw9HF9kOW5o7w4Um0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
