@@ -29,7 +29,7 @@ class HistoryScreen extends StatelessWidget {
         valueListenable: historyBox.listenable(),
         builder: (context, Box<HistoryEntry> box, _) {
           final historyList = box.values.toList()
-            ..sort((a, b) => b.date.compareTo(a.date)); // most recent first
+            ..sort((a, b) => b.date.compareTo(a.date)); // most recent first!!!
 
           if (historyList.isEmpty) {
             return Center(

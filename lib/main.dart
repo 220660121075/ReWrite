@@ -14,12 +14,12 @@ void main() async {
 
   await Hive.initFlutter();
 
-  // ✅ Register Hive TypeAdapters
+  // Register Hive TypeAdapters
   Hive.registerAdapter(NovelAdapter()); //register novel mode
   Hive.registerAdapter(ChapterAdapter()); //register chapter model
   Hive.registerAdapter(HistoryEntryAdapter()); // register history entry model
 
-  // ✅ Open boxes
+  // Open boxes
   await Hive.openBox<Novel>('novelsBox'); //novelsBox storage
   await Hive.openBox<HistoryEntry>('historyBox'); // historyBox storage
 

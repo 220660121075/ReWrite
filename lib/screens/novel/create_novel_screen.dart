@@ -82,7 +82,7 @@ class _CreateNovelScreenState extends State<CreateNovelScreen> {
         id: uuid.v4(),
         title: title,
         description: description,
-        coverImage: '', // You can update this later when you implement cover upload
+        coverImage: '', // update to upload cover!!!
         genres: genres,
         createdDate: creationDate,
         chapters: <Chapter>[],
